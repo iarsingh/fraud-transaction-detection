@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-transaction-detection
+  labels:
+    app: fraud-transaction-detection
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fraud-transaction-detection
+  template:
+    metadata:
+      labels:
+        app: fraud-transaction-detection
+    spec:
+      containers:
+        - name: api
+          image: fraud-transaction-detection:local
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /v1/readyz
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraud-transaction-detection
+spec:
+  selector:
+    app: fraud-transaction-detection
+  ports:
+    - port: 80
+      targetPort: 8080
